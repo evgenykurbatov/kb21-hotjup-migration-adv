@@ -49,6 +49,8 @@ class Pringle(object):
         Calculate the momentum flux density tensor (its $r\phi$-conponent).
     torque
         Calculate the angular momentum of external forces (i.e. torque).
+    spec_source
+        Calculate the mass specific source which is proportional to density.
     source
         Calculate the mass source.
     """
@@ -164,6 +166,7 @@ class Pringle(object):
         A_ = dt * A
         B_ = dt * B
         C_ = dt * C
+        Q = self.spec_source(r, p)
         S = self.source(r, p)
 
         ## Corrections for boundary conditions
@@ -176,10 +179,10 @@ class Pringle(object):
             B_[-1] = 0
             F_R = 0
 
-        B_ += 1 - dt * S
+        B_ += 1 - dt * Q
 
         ## Right-hand side
-        R = Sigma_old
+        R = Sigma_old + dt * S
         R[0]  += dt * _phi[0] * r_[0]*F_L
         R[-1] += - dt * _phi[-1] * r_[-1]*F_R
 
@@ -211,6 +214,12 @@ class Pringle(object):
     def torque(self, r, p):
         """"""
         return np.zeros_like(r)
+
+
+
+    def spec_source(self, r, p):
+        """"""
+        return 0
 
 
 
