@@ -41,13 +41,18 @@ k_B = 1.38e-16
 ##
 
 ## Length units
-nm = 1e-7        ## Nanometers [cm]
-Angstrom = 1e-8  ## Angstrom [cm]
+nm = 1e-7        ## 1e-9 m [cm]
+Angstrom = 1e-8  ## [cm]
 ## Energy units
-EV = 1.6022e-12  ## [erg]
+Joile = 1e7      ## kg m^2/s^2 [erg]
+Watt = 1e7       ## Joile/s [erg/s]
+EV = 1.6022e-12  ## Electron-Volt [erg]
 eV = EV
-Joile = 1e7      ## [erg]
-Watt = 1e7       ## [erg/s]
+## Force units
+Newton = 1e5     ## kg m/s^2 [g cm/s^2]
+## Pressure units
+Pascal = 10.0    ## J/m^3 [erg/cm^3]
+mbar = 1e3       ## 100 Pascal [erg/cm^3]
 
 
 ##
