@@ -138,8 +138,6 @@ def main(config, dotM_p_ref, a_ini, t_ini, alpha, beta):
     ## Plot
     ##
 
-    return 0
-
     import matplotlib as mpl
     import matplotlib.pyplot as plt
 
