@@ -16,7 +16,9 @@ Python with Numpy, Scipy, H5Py, Matplotlib. Latest [Anaconda](https://www.anacon
 
 ## Code
 
-The core model are in the **model.py** and **pringle.py** scripts. The former contains the _Model_ class which is set-up and instantiated inside of _main_ function of the **main.py** module. The parameters of a _main_ function define the actual model. It is called by the **run\_\*.py** scripts and some parameters are given in the **config\_\*.py** files.
+The core model is in the **model.py** and **pringle.py** scripts. The former contains the _Model_ class which is set-up and instantiated inside of _main_ function of the **main.py** module. The parameters of a _main_ function define the actual model. It is called by the **run\_\*.py** scripts and some parameters are given in the **config\_\*.py** files as well as in **aux.py**.
+
+There are two sets of scripts: **\*\_nope.py** and **\*\_xray.py**. The first stands for the models with no photoevaporation, and the second is for the models with photoevaporation by X-ray stellar radiation.
 
 
 ## Publications
