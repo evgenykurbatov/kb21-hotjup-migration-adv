@@ -6,7 +6,7 @@
 
 Many of observed hot Jupiters are subject to atmospheric outflows. Numerical simulations have shown that the matter escaping from the atmosphere can accumulate outside the orbit of the planet, forming a torus. In a few 10^8 yr, the mass of the torus can become large enough to exert a significant gravitational effect on the planet. Accumulation of mass, in its own turn, is hindered by the activity of the star, which leads to the photoevaporation of the torus matter. We explore the role of these and other factors in the planet's migration in the epoch when the protoplanetary disk has already disappeared. Using HD 209458 system as an example, we show that the gravitational interaction with the torus leads to the possibility of migration of the planet to its observable position, starting from an orbit ~0.3 AU.
 
-This code is suitable for calculating the evolution of surface density in a disk under the influence of tidal forces from the planet and viscous forces. It is based on the Pringle's model of geometrically thin viscous accretion disk. The model includes photoevaporation.
+This code is suitable for calculating the evolution of the surface density of an accretion disk under the action of tidal force from the planet, viscous force, and stellar ionizing radiation (by photoevaporation). It is based on the Pringle's model of geometrically thin viscous accretion disk. The planet orbit migrates due to the angular momentum exchange.
 
 
 ## Requirements
@@ -16,7 +16,7 @@ Python with Numpy, Scipy, H5Py, Matplotlib. Latest [Anaconda](https://www.anacon
 
 ## Code
 
-The core model is in the **model.py** and **pringle.py** scripts. The former contains the _Model_ class which is set-up and instantiated inside of _main_ function of the **main.py** module. The parameters of a _main_ function define the actual model. It is called by the **run\_\*.py** scripts and some parameters are given in the **config\_\*.py** files as well as in **aux.py**.
+The core model is in the **model.py** and **pringle.py** scripts. The former contains the _Model_ class which is set-up and instantiated inside of _main_ function of the **main.py** module. The parameters of a _main_ function define the actual model. It is runned by the **run\_\*.py** scripts, while some parameters are given in the **config\_\*.py** files as well as in **aux.py**.
 
 There are two sets of scripts: **\*\_nope.py** and **\*\_xray.py**. The first stands for the models with no photoevaporation, and the second is for the models with photoevaporation by X-ray stellar radiation.
 
