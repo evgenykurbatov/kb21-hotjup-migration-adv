@@ -94,7 +94,7 @@ class Pringle(object):
 
 
 
-    def prepare(self, p=None, eigvals=False):
+    def prepare(self, p=None, eigvals=False, diagnostic=False):
         """Calculate matrix of differential operator and its spectrum
 
         Parameters
@@ -102,7 +102,9 @@ class Pringle(object):
         p : optional
             Parameter for user-supplied functions (e.g. class instance, dict or ctype struct).
         eigvals : bool, optional
-            To calculate eigenvalues of differential operator or not (default).
+            Either to calculate eigenvalues of differential operator or not (default).
+        diagnostic : bool, optional
+            Either to keep viscosity and torque or not (default).
         """
 
         r    = self.r
@@ -113,12 +115,12 @@ class Pringle(object):
         _diffus_p = self._diffus_p
         _torque   = self._torque
 
-        W = self.viscosity_tensor(r, p)
-        T = self.torque(r_, p)
+        W  = self.viscosity_tensor(r, p)
+        _T = self.torque(r_, p)
 
         ## Auxiliary quantities for differential operator
-        _psi_m = np.concatenate(([None], _diffus_m[1:-1]*W[:-1] - _torque[1:-1]*T[1:-1], [None]))
-        _psi_p = np.concatenate(([None], _diffus_p[1:-1]*W[1:]  + _torque[1:-1]*T[1:-1], [None]))
+        _psi_m = np.concatenate(([None], _diffus_m[1:-1]*W[:-1] - _torque[1:-1]*_T[1:-1], [None]))
+        _psi_p = np.concatenate(([None], _diffus_p[1:-1]*W[1:]  + _torque[1:-1]*_T[1:-1], [None]))
 
         ## Sub-diagonal
         A = _phi[1:] *  _psi_m[1:-1]
@@ -134,6 +136,10 @@ class Pringle(object):
             ret = (A, B, C), sp.linalg.eigvals(L)
         else:
             ret = (A, B, C)
+
+        if diagnostic:
+            self.W  = W.copy()
+            self._T = _T.copy()
 
         return ret
 
@@ -196,6 +202,41 @@ class Pringle(object):
         #Sigma_new = sp.sparse.linalg.spsolve(M, R)
 
         return Sigma_new
+
+
+
+    def diagnostic(self, Sigma):
+        """
+        """
+
+        r    = self.r
+        r_   = self.r_
+        dr_  = self.dr_
+        _phi  = self._phi
+        _diffus_m = self._diffus_m
+        _diffus_p = self._diffus_p
+        _torque   = self._torque
+        W  = self.W
+        _T = self._T
+
+        _psi_m = np.concatenate(([None], _diffus_m[1:-1]*W[:-1] - _torque[1:-1]*_T[1:-1], [None]))
+        _psi_p = np.concatenate(([None], _diffus_p[1:-1]*W[1:]  + _torque[1:-1]*_T[1:-1], [None]))
+
+        F_L_, F_R_ = self.F_L, self.F_R
+        rF_ = np.concatenate(([None], _psi_p[1:-1]*Sigma[1:] - _psi_m[1:-1]*Sigma[:-1], [None]))
+        if F_L_ is None:
+            rF_[0] = rF_[1]
+        else:
+            rF_[0] = r_[0]*F_L_
+        if F_R_ is None:
+            rF_[-1] = rF_[-2]
+        else:
+            rF_[-1] = r_[-1]*F_R_
+
+        #_r2W = np.concatenate(([None], _r[1:-1]**2 * 0.5*(W[1:]*Sigma[1:] + W[:-1]*Sigma[:-1]), [None]))
+        r2W = r**2*W*Sigma
+
+        return rF_, r2W
 
 
 
@@ -274,13 +315,20 @@ if __name__ == "__main__":
     ## Boundary flux
     model.F_L = 4
 
+    ## Diagnostic variables
+    rF_ = np.empty((t.size, r_.size))
+    rF_[0] = np.concatenate(([r_0*model.F_L], np.zeros_like(r)))
+    r2W = np.empty((t.size, r_.size-1))
+    r2W[0] = np.zeros_like(r)
+
     ## Solve
-    (A, B, C), lam = model.prepare(eigvals=True)
+    (A, B, C), lam = model.prepare(eigvals=True, diagnostic=True)
     print("min(lam) =", min(lam))
     print("max(lam) =", max(lam))
     for j in range(1, t.size):
         print("t[%d] = %g = %g t_0" % (j, t[j], t[j]/t_0))
         Sigma[j] = model.advance(Sigma[j-1], t[j] - t[j-1], A, B, C)
+        rF_[j], r2W[j] = model.diagnostic(Sigma[j])
 
 
     ##
@@ -289,13 +337,22 @@ if __name__ == "__main__":
     import matplotlib as mpl
     import matplotlib.pyplot as plt
 
-    fig, ax = plt.subplots(nrows=1, ncols=1)
+    fig, ax = plt.subplots(nrows=1, ncols=2)
 
+    ax_ = ax[0]
     for j in range(1, t.size):
-        ax.plot(r/r_0, Sigma[j], label=(r"$t/t_0 = %g$" % (t[j]/t_0)))
-    ax.legend(loc='best')
-    ax.set_xlabel(r"$r/r_0$")
-    ax.set_ylabel(r"$\Sigma$")
+        ax_.plot(r/r_0, Sigma[j], label=(r"$t/t_0 = %g$" % (t[j]/t_0)))
+    ax_.legend(loc='best')
+    ax_.set_xlabel(r"$r/r_0$")
+    ax_.set_ylabel(r"$\Sigma$")
+
+    ax_ = ax[1]
+    for j in range(1, t.size):
+        rFLam = 0.5*(rF_[j][:-1] + rF_[j][1:]) * sqrt(r)
+        p = ax_.plot(r/r_0, rFLam, ls='-')
+        ax_.plot(r/r_0, -r2W[j], c=p[0].get_color(), ls='--')
+    ax_.set_xlabel(r"$r/r_0$")
+    ax_.set_ylabel(r"solid: $r F r^2 \Omega$, dashed: $-r^2 W$")
 
     plt.tight_layout()
     plt.show()

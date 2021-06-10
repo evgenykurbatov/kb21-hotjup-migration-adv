@@ -193,6 +193,13 @@ class Model(object):
 
         ## Field's grid (it's expandable)
         M_t       = np.array([0])
+        J_t       = np.array([0])
+        dotM_pe   = np.array([0])
+        K_pe      = np.array([])
+        dotJ_pe   = np.array([0])
+        dotM_b    = np.array([0])
+        K_b       = np.array([])
+        dotJ_b    = np.array([0])
         sigma_max = np.array([0])
         H_gap     = np.array([0])
 
@@ -233,6 +240,11 @@ class Model(object):
             _t        = np.append(_t,        [np.nan])
             q         = np.append(q,         [np.empty_like(q[0])], axis=0)
             M_t       = np.append(M_t,       [np.nan])
+            J_t       = np.append(J_t,       [np.nan])
+            dotM_pe   = np.append(dotM_pe,   [np.nan])
+            dotJ_pe   = np.append(dotJ_pe,   [np.nan])
+            dotM_b    = np.append(dotM_b,    [np.nan])
+            dotJ_b    = np.append(dotJ_b,    [np.nan])
             sigma_max = np.append(sigma_max, [np.nan])
             H_gap     = np.append(H_gap,     [np.nan])
 
@@ -309,7 +321,7 @@ class Model(object):
             p.Sigma_0 = p.dotM_p[0] / (2*pi*r_0**2*Omega_0)
 
             ## Preparing Pringle
-            (A, B, C) = self.pringle.prepare(p)
+            (A, B, C) = self.pringle.prepare(p, diagnostic=True)
             ## Advancing `Sigma` to the next time point
             sigma_new = self.pringle.advance(sigma_old, Omega_0*dt, A, B, C, p)
 
@@ -322,6 +334,35 @@ class Model(object):
 
             x = self.x
             M_t[j+1] = 2*pi*r_0**2 * p.Sigma_0 * sp.integrate.simps(x * sigma_new, x, even='avg')
+
+
+            ##
+            ## Torus angular momentum
+
+            J_t[j+1] = 2*pi*r_0**2 * p.Sigma_0 * r_0**2*Omega_0 * sp.integrate.simps(x * sigma_new * sqrt(x), x, even='avg')
+
+            ##
+            ## Torus angular momentum photoevaporation rate
+
+            Q_pe = - self.kappa_X * self.dotSigma_pe(p.t, r_0*x, r_0)
+            S_pe_new = 2*pi*r_0**2 * p.Sigma_0 \
+                       * sp.integrate.cumtrapz(x * Q_pe * sigma_new, x, initial=0.0)
+            dotM_pe[j+1] = S_pe_new[-1]
+            K_pe_new = 2*pi*r_0**2 * r_0**2*Omega_0 * p.Sigma_0 \
+                       * sp.integrate.cumtrapz(x * Q_pe * sigma_new * sqrt(x), x, initial=0.0)
+            dotJ_pe[j+1] = K_pe_new[-1]
+
+
+            ##
+            ## Diagnostic
+
+            xf_, x2w = self.pringle.diagnostic(sigma_new)
+            rF = p.dotM_p[0]/(2*pi) * 0.5*(xf_[1:] + xf_[:-1])
+            dotM_b[j+1] = 2*pi * (-rF[-1])
+            rFLam = p.dotM_p[0]/(2*pi) * r_0**2*Omega_0 * 0.5*(xf_[1:] + xf_[:-1]) * sqrt(x)
+            r2W = r_0**2 * r_0**2*Omega_0 * p.Sigma_0 * Omega_0 * x**2 * self.viscosity_tensor(x, p) * sigma_new
+            K_b_new = 2*pi * (-rFLam + r2W)
+            dotJ_b[j+1] = K_b_new[-1] - K_b_new[0]
 
 
             ##
@@ -345,8 +386,12 @@ class Model(object):
                 ##
                 if sigma.size == 0:
                     sigma = np.expand_dims(sigma_new, 0).copy()
+                    K_pe  = np.expand_dims(K_pe_new,  0).copy()
+                    K_b   = np.expand_dims(K_b_new,   0).copy()
                 else:
                     sigma = np.append(sigma, [sigma_new], axis=0)
+                    K_pe  = np.append(K_pe,  [K_pe_new],  axis=0)
+                    K_b   = np.append(K_b,   [K_b_new],   axis=0)
                 ## Switching to the next snapshot point
                 j_ss = np.append(j_ss, [j+1])
                 jt_ss += 1
@@ -383,6 +428,13 @@ class Model(object):
         self.sigma     = sigma
         self.j_ss      = j_ss
         self.M_t       = M_t
+        self.J_t       = J_t
+        self.dotM_pe   = dotM_pe
+        self.K_pe      = K_pe
+        self.dotJ_pe   = dotJ_pe
+        self.dotM_b    = dotM_b
+        self.K_b       = K_b
+        self.dotJ_b    = dotJ_b
         self.sigma_max = sigma_max
         self.H_gap     = H_gap
         print("... done.")

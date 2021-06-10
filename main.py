@@ -51,6 +51,13 @@ def main(config, dotM_p_ref, a_ini, t_ini, alpha, beta):
     sigma     = model.sigma
     j_ss      = model.j_ss
     M_t       = model.M_t
+    J_t       = model.J_t
+    dotM_pe   = model.dotM_pe
+    K_pe      = model.K_pe
+    dotJ_pe   = model.dotJ_pe
+    dotM_b    = model.dotM_b
+    K_b       = model.K_b
+    dotJ_b    = model.dotJ_b
     sigma_max = model.sigma_max
     H_gap     = model.H_gap
 
@@ -73,6 +80,8 @@ def main(config, dotM_p_ref, a_ini, t_ini, alpha, beta):
     Sigma = np.multiply(Sigma_0[j_ss], sigma.T).T
     ## To please h5py
     Sigma = Sigma.astype(np.float64)
+    K_pe  = K_pe.astype(np.float64)
+    K_b   = K_b.astype(np.float64)
 
     Sigma_max = Sigma_0 * sigma_max
 
@@ -118,10 +127,20 @@ def main(config, dotM_p_ref, a_ini, t_ini, alpha, beta):
          .attrs['comment'] = "Planet mass [g]"
         f.create_dataset('M_t',         data=M_t,        compression="gzip") \
          .attrs['comment'] = "Torus mass [g]"
+        f.create_dataset('dotM_pe',     data=dotM_pe,    compression="gzip") \
+         .attrs['comment'] = "Total mass loss by photoevaporation [g s-1]"
+        f.create_dataset('dotM_b',      data=dotM_b,     compression="gzip") \
+         .attrs['comment'] = "Total mass loss by conservative flux [g s-1]"
         f.create_dataset('a',           data=a,          compression="gzip") \
          .attrs['comment'] = "Planetary orbit radius [cm]"
         f.create_dataset('r_0',         data=r_0,        compression="gzip") \
          .attrs['comment'] = "Internal radius of the disk [cm]"
+        f.create_dataset('J_t',         data=J_t,        compression="gzip") \
+         .attrs['comment'] = "Torus angular momentum [g cm2 s-1]"
+        f.create_dataset('dotJ_pe',     data=dotJ_pe,    compression="gzip") \
+         .attrs['comment'] = "Total torque by photoevaporation [g cm2 s-2]"
+        f.create_dataset('dotJ_b',      data=dotJ_b,     compression="gzip") \
+         .attrs['comment'] = "Total torque by conservative flux [g cm2 s-2]"
         f.create_dataset('Sigma_max' ,  data=Sigma_max,  compression="gzip") \
          .attrs['comment'] = "Maximum value of the surface density [g cm-2]"
         f.create_dataset('H_gap',       data=H_gap,      compression="gzip") \
@@ -131,6 +150,10 @@ def main(config, dotM_p_ref, a_ini, t_ini, alpha, beta):
          .attrs['comment'] = "Indexes in the 't' array corresponding to the snapshot times"
         f.create_dataset('Sigma',       data=Sigma,      compression="gzip") \
          .attrs['comment'] = "Surface density at the snapshot times [g cm-2]"
+        f.create_dataset('K_pe',        data=K_pe,       compression="gzip") \
+         .attrs['comment'] = "Cumulative torque distribution by photoevaporation [g cm2 s-2]"
+        f.create_dataset('K_b',         data=K_b,        compression="gzip") \
+         .attrs['comment'] = "Cumulative torque distribution by conservative flux [g cm2 s-2]"
 
 
 
