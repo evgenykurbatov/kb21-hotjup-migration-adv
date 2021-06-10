@@ -11,19 +11,19 @@ This code is suitable for calculating the evolution of the surface density of an
 
 ## Requirements
 
-Python with Numpy, Scipy, H5Py, Matplotlib. Latest [Anaconda](https://www.anaconda.com/) is OK.
+Python with NumPy, SciPy, H5Py, Matplotlib. Latest [Anaconda](https://www.anaconda.com/) is OK.
 
 
 ## Code
 
-The core model is in the **model.py** and **pringle.py** scripts. The former contains the _Model_ class which is set-up and instantiated inside of _main_ function of the **main.py** module. The parameters of a _main_ function define the actual model. It is runned by the **run\_\*.py** scripts, while some parameters are given in the **config\_\*.py** files as well as in **aux.py**.
+The core of the model are **model.py** and **pringle.py** scripts. The former contains the _Model_ class which is set-up and instantiated inside of _main_ function of the **main.py** module. The parameters of a _main_ function define the actual model. It is runned by the **run\_\*.py** scripts, while some parameters are given in the **config\_\*.py** files as well as in **aux.py**.
 
-There are two sets of scripts: **\*\_nope.py** and **\*\_xray.py**. The first stands for the models with no photoevaporation, and the second is for the models with photoevaporation by X-ray stellar radiation.
+There are two sets of scripts for configuration and running: **\*\_nope.py** and **\*\_xray.py**. The first stands for the models with no photoevaporation, and the second is for the models with photoevaporation by X-ray stellar radiation.
 
 
 ## Publications
 
-E. P. Kurbatov, D. V. Bisikalo. _The role of atmospheric outflows in the migration of hot Jupiters_. Submitted to MNRAS.
+E. P. Kurbatov, D. V. Bisikalo. _The role of atmospheric outflows in the migration of hot Jupiters_. Accepted in MNRAS ([arXiv](https://arxiv.org/abs/2101.04112)).
 
 
 ## Authors
