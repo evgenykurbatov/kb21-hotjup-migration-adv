@@ -20,7 +20,7 @@ import const
 ##
 
 M_s = const.M_sol
-L_X = 0.1 * 4*pi*const.AU**2
+#L_X = 0.1 * 4*pi*const.AU**2
 L_X = 10**27.08
 print("L_X = %.2e [erg/s] = %.2e L_sol" % (L_X, L_X/const.L_sol))
 
