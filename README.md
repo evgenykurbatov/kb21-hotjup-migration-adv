@@ -30,7 +30,7 @@ E. P. Kurbatov, D. V. Bisikalo. _The role of atmospheric outflows in the migrati
 
 ### Author of the code
 
-**Evgeny P. Kurbatov** _Institute of Astronomy, Russian Academy of Sciences / Moscow, Russia_
+**Evgeny P. Kurbatov** _Institute of Astronomy, Russian Academy of Sciences / Moscow, Russia_ [(ORCID iD)](https://orcid.org/0000-0002-1024-9446)
 - <kurbatov@inasan.ru>
 - <evgeny.p.kurbatov@gmail.com>
 
