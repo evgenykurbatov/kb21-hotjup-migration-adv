@@ -23,7 +23,7 @@ There are two sets of scripts for configuration and running: **\*\_nope.py** and
 
 ## Publications
 
-E. P. Kurbatov, D. V. Bisikalo. _The role of atmospheric outflows in the migration of hot Jupiters_. Accepted in MNRAS ([arXiv](https://arxiv.org/abs/2101.04112)).
+E. P. Kurbatov, D. V. Bisikalo. _The role of atmospheric outflows in the migration of hot Jupiters_, [2021, MNRAS, 506, 3128–3137](https://academic.oup.com/mnras/article-abstract/506/3/3128/6321842) | [ADS](https://ui.adsabs.harvard.edu/abs/2021MNRAS.506.3128K) | [arXiv](https://arxiv.org/abs/2101.04112).
 
 
 ## Authors
